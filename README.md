@@ -26,6 +26,8 @@ Use ```3.6.9 <= python < 3.9```. Run ```pip3 install -r requirements.txt``` to g
 
 **PLEASE DOWNLOAD THE MODEL** [HERE](https://github.com/cwittwer/look/blob/main/look/models/predictor/LookingModel_LOOK%2BPIE.p) **AND PLACE IN THE SAME LOCATION**(or name the location when create the instance of the class)
 
+The model runs best on CUDA GPU, so for near real time performance, ensure you are using PyTorch with a GPU. See [HERE](https://pytorch.org/get-started/locally/)
+
 ## Custom Training And Model Evaluation
 
 Please refer to the [original repo](https://github.com/vita-epfl/looking) for training custom models and evaluation of models.

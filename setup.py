@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="python-look",
-    version="0.1.6",
+    version="0.1.0",
 	license="MIT",
     author="Carson Wittwer",
     author_email="wittwer.carson@googlemail.com",
