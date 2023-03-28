@@ -88,7 +88,7 @@ Get predictions from the pretrained model using any image with the predictor API
 
       if ret == True:
           pred.predict(frame)
-          frame = look.get_output_image()
+          frame = pred.get_output_image()
 
           cv2.imshow('frame', frame)
 
