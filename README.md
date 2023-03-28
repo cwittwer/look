@@ -4,7 +4,7 @@ Simple wrapper code to run inference on images using the model and code from the
 
 The Looking Repo is an official implementation of the paper [Do pedestrians pay attention? Eye contact detection for autonomous driving](https://arxiv.org/abs/2112.04212)
 
-![alt text](https://github.com/cwittwer/look/blob/main/images/people-walking-on-pedestrian-lane-during-daytime-3.jpg)
+![alt text](https://github.com/cwittwer/look/blob/main/images/people-walking-on-pedestrian-lane-during-daytime.pedictions.png)
 
 Image taken from : https://jooinn.com/people-walking-on-pedestrian-lane-during-daytime.html . Results obtained with the model trained on JackRabbot, Nuscenes, JAAD and Kitti. The model file is available at ```models/predictor``` and can be reused for testing with the predictor. 
 
