@@ -1,95 +1,115 @@
-# Do pedestrians pay attention? Eye contact detection for autonomous driving
+# LOOK: A Wrapper For A Visual Attention Model
 
-Official implementation of the paper [Do pedestrians pay attention? Eye contact detection for autonomous driving](https://arxiv.org/abs/2112.04212)
+Simple wrapper code to run inference on images using the model and code from the [Looking Repo from VITA-EPFL](https://github.com/vita-epfl/looking).
 
-![alt text](https://github.com/vita-epfl/looking/blob/main/images/people-walking-on-pedestrian-lane-during-daytime.pedictions.png)
+The Looking Repo is an official implementation of the paper [Do pedestrians pay attention? Eye contact detection for autonomous driving](https://arxiv.org/abs/2112.04212)
+
+![alt text](https://github.com/cwittwer/look/blob/main/images/people-walking-on-pedestrian-lane-during-daytime-3.jpg)
 
 Image taken from : https://jooinn.com/people-walking-on-pedestrian-lane-during-daytime.html . Results obtained with the model trained on JackRabbot, Nuscenes, JAAD and Kitti. The model file is available at ```models/predictor``` and can be reused for testing with the predictor. 
-
-## Abstract 
-
-> In urban or crowded environments, humans rely on eye contact for fast and efficient communication with nearby people. Autonomous agents also need to detect eye contact to interact with pedestrians and safely navigate around them. In this paper, we focus on eye contact detection in the wild, i.e., real-world scenarios for autonomous vehicles with no control over the environment or the distance of pedestrians. We introduce a model that leverages semantic keypoints to detect eye contact and show that this high-level representation (i) achieves state-of-the-art results on the publicly-available dataset JAAD, and (ii) conveys better generalization properties than leveraging raw images in an end-to-end network. To study domain adaptation, we create LOOK: a large-scale dataset for eye contact detection in the wild, which focuses on diverse and unconstrained scenarios for real-world generalization. The source code and the LOOK dataset are publicly shared towards an open science mission. 
-
-
 
 ## Table of contents
 
 - [Requirements](#requirements)
 - [Predictor](#predictor)
   * [Example command](#example-command-)
-- [Create the datasets for training and evaluation](#create-the-datasets-for-training-and-evaluation)
-- [Training your models on LOOK / JAAD / PIE](#training-your-models-on-look---jaad---pie)
-- [Evaluate your trained models](#evaluate-your-trained-models)
-- [Annotate new images](#annotate-new-images)
-- [Cite our work](#cite-our-work)
+- [Cite VITA-EPFL's work](#cite-VITA-EPFL's-work)
 
 
 ## Requirements
 
 Use ```3.6.9 <= python < 3.9```. Run ```pip3 install -r requirements.txt``` to get the dependencies
 
+## Custom Training And Model Evaluation
+
+Please refer to the [original repo](https://github.com/vita-epfl/looking) for training custom models and evaluation of models.
+
 ## Predictor
 
-<img src="https://github.com/vita-epfl/looking/blob/main/images/kitti.gif" data-canonical-src="https://github.com/vita-epfl/looking/blob/main/images/kitti.gif" width="1238" height="375" />
+<img src="https://github.com/cwittwer/look/blob/main/images/kitti.gif" data-canonical-src="https://github.com/cwittwer/look/blob/main/images/kitti.gif" width="1238" height="375" />
 
-Get predictions from our pretrained model using any image with the predictor. The scripts extracts the human keypoints on the fly using [OpenPifPaf](https://openpifpaf.github.io/intro.html). The predictor supports eye contact detection using human keypoints only.
-You need to specify the following arguments in order to run correctly the script:
+Get predictions from the pretrained model using any image with the predictor API. The API extracts the human keypoints on the fly using [OpenPifPaf](https://openpifpaf.github.io/intro.html). **The predictor supports eye contact detection using human keypoints only.**
 
-| Parameter                 |Description   |
-| :------------------------ |:-------------|
-| ```--glob``` | Glob expression to be used. Example: ```.png``` |
-| ```--images```  | Path to the input images. If glob is enabled you need the path to the directory where you have the query images |
-| ```--looking_threshold```  | Threshold to define an eye contact. Default ```0.5```|
-| ```--transparency```  | Transparency of the output poses. Default ```0.4```|
+## Run Inference
+<ul>
+  <li>Create an instance of the Predictor (with default or custom settings)</li>
+      
+      import look
+      pred = look.Predictor()
+      
+  <li>Run predict on an RGB OpenCV format image</li>
+        
+      pred.predict(image)
+      
+  <li>Call for results, in either data or an image with overlayed information</li>
+        
+      output_image = pred.get_output_image()
+      
 
-### Example command:
+</ul>
 
-If you want to reproduce the result of the top image, run:
+## Predictor Initialization Parameters
 
-#### If you want to run the predictor on a GPU:
-```
-python predict.py --images images/people-walking-on-pedestrian-lane-during-daytime-3.jpg
-```
-#### If you want to run the predictor on a CPU:
-```
-python predict.py --images images/people-walking-on-pedestrian-lane-during-daytime-3.jpg --device cpu --disable-cuda
-```
+| Parameter                 |Default Value   |Description   |
+| :------------------------ |:---------------|:-------------|
+| ```transparency``` | ```0.4``` | transparency of the overlayed poses ```float``` |
+| ```looking_threshold``` | ```0.5``` | eye contact threshold ```float``` |
+| ```mode``` | ```joints``` | prediction mode ```string``` |
+| ```device``` | ```'0'``` | CUDA device ```string``` |
+| ```pifpaf_ver``` | ```shufflenetv2k30``` | PIFPAF ARG: backbone model to use ```string``` |
+| ```model_path``` | ```models/predictor``` | To use custom trained model ```string``` |
+| ```batch_size``` | ```1``` | PIFPAF ARG: processing batch size ```int``` |
+| ```long_edge``` | ```None``` | PIFPAF ARG: rescale the long side of the image (aspect ratio maintained) ```int``` |
+| ```loader_workers``` | ```None``` | PIFPAF ARG: number of workers for data loading ```int``` |
+| ```disable_cuda``` | ```False``` | PIFPAF ARG: disable CUDA ```bool``` |
 
-## Create the datasets for training and evaluation
 
-Please follow the instructions on the folder [create_data](https://github.com/vita-epfl/looking/tree/main/create_data).
+### Example Code To Run:
 
-## Training your models on LOOK / JAAD / PIE
+  ```
+  import cv2
+  import look
 
-You have one config file to modify. **Do not change the variables name**. Check the meaning of each variable to change on the [training wiki](/wikis/train.md).
+  pred = look.Predictor()
 
-After changing your configuration file, run:
+  cap = cv2.VideoCapture(0)
 
-```python train.py --file [PATH_TO_CONFIG_FILE]```
+  if cap.isOpened() == False:
+      print("Camera feed is not open")
+      exit()
 
-A sample config file can be found at ```config_example.ini```
+  width = int(cap.get(3))
+  height = int(cap.get(4))
 
-## Evaluate your trained models
+  print(f'Image Size: {width} X {height}')
 
-Check the meaning of each variable to change on the [evaluation wiki](/wikis/eval.md).
+  while True:
+      ret, frame = cap.read()
 
-After changing your configuration file, run:
+      if ret == True:
+          pred.predict(frame)
+          frame = look.get_output_image()
 
-```python evaluate.py --file [PATH_TO_CONFIG_FILE]```
+          cv2.imshow('frame', frame)
 
-A sample config file can be found at ```config_example.ini```
+          if cv2.waitKey(1) & 0xFF == ord('q'):
+              break
+      
+      else:
+          print('Could not get frame from video')
+          break
 
-## Annotate new images
-
-Check out the folder [annotator](https://github.com/vita-epfl/looking/tree/main/annotator) in order to run our annotator to annotate new instances for the task.
+  cap.release()
+  cv2.destroyAllWindows()
+  ```
 
 ## Credits
 
-Credits to [OpenPifPaf](https://openpifpaf.github.io/intro.html) for the pose detection part, and [JRDB](https://jrdb.stanford.edu/), [Nuscenes](https://www.nuscenes.org/) and [Kitti](http://www.cvlibs.net/datasets/kitti/) datasets for the images.
+Credits to [OpenPifPaf](https://openpifpaf.github.io/intro.html) for the pose detection part.
 
-## Cite our work
+## Cite VITA-EPFL's work
 
-If you use our work for your research please cite us :) 
+If you use our work for your research please cite VITA-EPFL :) 
 
 ```
 @misc{belkada2021pedestrians,

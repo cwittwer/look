@@ -3,13 +3,13 @@ import argparse
 import time
 
 import logging
-log = logging.getLogger('LOOKLog')
-log.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(levelname)s | %(asctime)s | %(name)s | %(message)s')
-handler.setFormatter(formatter)
-log.addHandler(handler)
+#log = logging.getLogger(openpifpaf.logger)
+#log.setLevel(logging.INFO)
+#handler = logging.StreamHandler()
+#handler.setLevel(logging.INFO)
+#formatter = logging.Formatter('%(levelname)s | %(asctime)s | %(name)s | %(message)s')
+#handler.setFormatter(formatter)
+#log.addHandler(handler)
 
 from .utils.network import *
 from .utils.utils_predict import *
@@ -26,7 +26,7 @@ parser.add_argument('--long-edge', default=None, type=int, help='rescale the lon
 parser.add_argument('--loader-workers', default=None, type=int, help='number of workers for data loading')
 parser.add_argument('--precise-rescaling', dest='fast_rescaling', default=True, action='store_false', help='use more exact image rescaling (requires scipy)')
 parser.add_argument('--checkpoint_', default='shufflenetv2k30', type=str, help='backbone model to use')
-parser.add_argument('--disable-cuda', action='store_true', help='disable CUDA')
+parser.add_argument('--disable-cuda', default='False', action='store_false', help='disable CUDA')
 parser.add_argument('--time', action='store_true', help='track comptutational time')
 """"""
 
@@ -44,8 +44,8 @@ FONT = cv2.FONT_HERSHEY_SIMPLEX
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-log.info('OpenPifPaf version'+openpifpaf.__version__)
-log.info('PyTorch version'+torch.__version__)
+log = logging.getLogger('openpifpaf.logger')
+log.setLevel(logging.INFO)
 
 class Predictor():
     """
@@ -55,6 +55,8 @@ class Predictor():
     """
     def __init__(self, transparency=0.4, looking_threshold=0.5, mode='joints', device=args.device, pifpaf_ver='shufflenetv2k30', model_path='models/predictor',
                 batch_size=args.batch_size, long_edge=args.long_edge, loader_workers=args.loader_workers, disable_cuda=args.disable_cuda):
+        
+        
         self.looking_threshold = looking_threshold
         self.transparency = transparency
         self.mode = mode
@@ -76,7 +78,6 @@ class Predictor():
         else:
             self.device = torch.device('cpu')
         args.device = self.device
-        log.info(f'Device being used: {self.device}')
         self.predictor_ = load_pifpaf(args)
         self.path_model = model_path
         try:
@@ -96,6 +97,10 @@ class Predictor():
         self.output_image=None
         self.boxes=None
         self.keypoints=None
+
+        log.info('OpenPifPaf version'+openpifpaf.__version__)
+        log.info('PyTorch version'+torch.__version__)
+        log.info(f'Device being used: {self.device}')
 
     
     def get_model(self):
