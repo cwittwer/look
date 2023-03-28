@@ -18,7 +18,13 @@ Image taken from : https://jooinn.com/people-walking-on-pedestrian-lane-during-d
 
 ## Requirements
 
+```
+pip install python-look
+```
+
 Use ```3.6.9 <= python < 3.9```. Run ```pip3 install -r requirements.txt``` to get the dependencies
+
+**PLEASE DOWNLOAD THE MODEL** [HERE](https://github.com/cwittwer/look/blob/main/look/models/predictor/LookingModel_LOOK%2BPIE.p) **AND PLACE IN THE SAME LOCATION**(or name the location when create the instance of the class)
 
 ## Custom Training And Model Evaluation
 

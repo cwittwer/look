@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="python-look",
-    version="0.1.5",
+    version="0.1.6",
 	license="MIT",
     author="Carson Wittwer",
     author_email="wittwer.carson@googlemail.com",
@@ -14,8 +14,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/cwittwer/look",
     packages=find_packages(exclude=("tests", "requirements.txt",)),
-	package_data={'models':['*']},
-    #include_package_data=True,
+	include_package_data=True,
 	install_requires=[
     "tqdm",
     "numpy",

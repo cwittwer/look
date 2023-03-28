@@ -105,9 +105,6 @@ class Predictor():
         """
         if self.mode == 'joints':
             model = LookingModel(INPUT_SIZE)
-            dir_name=os.path.dirname(__file__)
-            if self.path_model=='models/predictor':
-                self.path_model=os.path.join(dir_name,'models/predictor')
             if not os.path.isfile(os.path.join(self.path_model, 'LookingModel_LOOK+PIE.p')):
                 """
                 DOWNLOAD(LOOKING_MODEL, os.path.join(self.path_model, 'Looking_Model.zip'), quiet=False)
