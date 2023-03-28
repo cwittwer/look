@@ -3,13 +3,6 @@ import argparse
 import time
 
 import logging
-#log = logging.getLogger(openpifpaf.logger)
-#log.setLevel(logging.INFO)
-#handler = logging.StreamHandler()
-#handler.setLevel(logging.INFO)
-#formatter = logging.Formatter('%(levelname)s | %(asctime)s | %(name)s | %(message)s')
-#handler.setFormatter(formatter)
-#log.addHandler(handler)
 
 from .utils.network import *
 from .utils.utils_predict import *
