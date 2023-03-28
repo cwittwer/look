@@ -1,7 +1,15 @@
 import os, errno
-import copy
 import argparse
 import time
+
+import logging
+log = logging.getLogger('LOOKLog')
+log.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(levelname)s | %(asctime)s | %(name)s | %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 from .utils.network import *
 from .utils.utils_predict import *
@@ -36,8 +44,8 @@ FONT = cv2.FONT_HERSHEY_SIMPLEX
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-print('OpenPifPaf version', openpifpaf.__version__)
-print('PyTorch version', torch.__version__)
+log.info('OpenPifPaf version'+openpifpaf.__version__)
+log.info('PyTorch version'+torch.__version__)
 
 class Predictor():
     """
@@ -45,7 +53,7 @@ class Predictor():
         For user customization of the PIFPAF arguments, access is given to the PIFPAF args on 
         initialization of the class and are set again if changed from default defined above
     """
-    def __init__(self, transparency=0.4, looking_threshold=0.5, mode='joints', device=args.device, pifpaf_ver='shufflenetv2k30', model_path='./models/predictor',
+    def __init__(self, transparency=0.4, looking_threshold=0.5, mode='joints', device=args.device, pifpaf_ver='shufflenetv2k30', model_path='models/predictor',
                 batch_size=args.batch_size, long_edge=args.long_edge, loader_workers=args.loader_workers, disable_cuda=args.disable_cuda):
         self.looking_threshold = looking_threshold
         self.transparency = transparency
@@ -63,12 +71,12 @@ class Predictor():
 
         if device != 'cpu':
             use_cuda = torch.cuda.is_available()
-            print(torch.cuda.is_available())
+            #print(torch.cuda.is_available())
             self.device = torch.device("cuda:{}".format(device) if use_cuda else "cpu")
         else:
             self.device = torch.device('cpu')
         args.device = self.device
-        print('device : {}'.format(self.device))
+        log.info(f'Device being used: {self.device}')
         self.predictor_ = load_pifpaf(args)
         self.path_model = model_path
         try:
@@ -99,7 +107,9 @@ class Predictor():
         """
         if self.mode == 'joints':
             model = LookingModel(INPUT_SIZE)
-            print(self.device)
+            dir_name=os.path.dirname(__file__)
+            if self.path_model=='models/predictor':
+                self.path_model=os.path.join(dir_name,'models/predictor')
             if not os.path.isfile(os.path.join(self.path_model, 'LookingModel_LOOK+PIE.p')):
                 """
                 DOWNLOAD(LOOKING_MODEL, os.path.join(self.path_model, 'Looking_Model.zip'), quiet=False)
@@ -277,7 +287,7 @@ class Predictor():
         self.input_image = image
 
         if(image is None or image.ndim!=3):
-            print('ERROR: Image is none or of wrong format')
+            log.error('ERROR: Image is none or of wrong format')
             exit()
         img_width, img_height, c = image.shape
         
@@ -301,7 +311,7 @@ class Predictor():
             self.output_image = self.render_image(pifpaf_outs['image'], self.boxes, self.keypoints, self.pred_labels)
 
         except Exception as err:
-            print(f'ERROR: {err}, {type(err)}')
+            log.error(f'{err}, {type(err)}')
 
     def get_pred_labels(self) -> list:
         """Prediction Labels
